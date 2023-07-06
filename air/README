@@ -1,0 +1,18 @@
+%%%   README   %%%
+Please add what your code does in this file as a brief summary, and what wants doing to it next
+
+bettermaskC - Peter's code, Corwin's fancification, this is ripped directly from gwanalyse_airs_3d, with some changes
+
+get_airs_granule - used within prep_airs_3d to gather the raw granules, not often to be used
+
+gwanalyse_airs_3d - the big one, this is used plop the s transform onto the granules, I think this is the most up to date version?
+
+nimbusAquis - my most up to date way of stransing airs granules (using the doubled up granule method), and shoving all the best params into day by day structs, and saving them
+
+paramAcquis - same as nimbusAquis, but without the doubled up granule bitty, and saving as doubles not singles (worse)
+
+prep_airs_3d - makes airs the best, removes planetary waves (methinks) and makes pretty before gwanalysing, make sure to have that daynightflag!
+
+secondmask - the mask that finds the locations of all the different gravity waves in a granule, not just the borders of the whole beast
+
+useparam - bins the params from the structures in nimbusAquis
