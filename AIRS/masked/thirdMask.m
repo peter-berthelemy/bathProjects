@@ -15,7 +15,7 @@ Does some smoothing and image wrangling then the mask is complete
 %}
 
 %create an array we will use to sum all of the tests applied
-Sigma = zeros(size(strans.A));
+Sigma = zeros(size(strans.k));
 
 %now, for each variable used in the test...
 for iVar=1:1:numel(Vars)
@@ -23,7 +23,7 @@ for iVar=1:1:numel(Vars)
   %extract the variable from the input S-Transform structure and normalise it into the range -1 to 1
   V = strans.(Vars{iVar});
   V = ((V-min(V(:)))./range(V(:))) .*2 -1;
-  norm(:,:,:,iVar) = V;
+%   norm(:,:,:,iVar) = V;
 
   %compute the absolute value of the first NDerivs derivatives in each direction, and add this to the Sigma array
   for iDiff=1:1:Derivs(end)
@@ -39,7 +39,7 @@ end; clear iVar V iDiff iDir x y
 
 %now, apply the cutoff to produce a binary mask
 Mask = zeros(size(Sigma));
-sumCutoff.*numel(Derivs).*numel(Vars)
+sumCutoff.*numel(Derivs).*numel(Vars);
 Mask(Sigma <= sumCutoff.*numel(Derivs).*numel(Vars)) = 1;
 clear sumCutoff
 
@@ -66,7 +66,7 @@ twoedmask = zeros(size(Mask));
 for s = 1:size(Mask, 3)
     wavelength = (1./(sqrt(strans.k.^2 + strans.l.^2)));
 
-    s
+%     s
     Mask(:,:,s) = bwmorph(Mask(:,:,s), 'bridge', 1);
     Mask(:,:,s) = bwmorph(Mask(:,:,s), 'clean');
     Mask(:,:,s) = imdilate(Mask(:,:,s), strel([2 2]));
@@ -81,7 +81,7 @@ for s = 1:size(Mask, 3)
     peep(peep<0) =NaN;
     peep = fillmissing(peep, "nearest");
     peep(peep == 0) = 0;
-    pop = zeros(size(peep));
+%     pop = zeros(size(peep));
     adj = isAdjacent(peep);
     for one = 1:max(adj, [], 'all')
 %         one
@@ -124,10 +124,10 @@ Mask = twoedmask;
 % end 
 % Mask = Mask2;
 % clear Mask2 iZ pp stats M3 sizeCutoff
-% 
-% peip = peep.*Mask;
+
+% peip = twoedmask.*Mask;
 % peip(peip == 0) = NaN;
 % peip(peep == 0) = 0;
-% peip = fillmissing(peip, "nearest");
+% Mask = fillmissing(peip, "nearest");
 % 
 % %finally, apply some smoothing to the end product and then filter the final product one last time
