@@ -40,14 +40,13 @@ end; clear iVar V iDiff iDir x y
 %now, apply the cutoff to produce a binary mask
 Mask = zeros(size(Sigma));
 sumCutoff.*numel(Derivs).*numel(Vars);
-Sigma = Sigma.^0.5;
 Mask(Sigma <= sumCutoff.*numel(Derivs).*numel(Vars)) = 1;
 clear sumCutoff
 
 Mask2 = zeros(size(Mask));
 for iZ=1:1:size(Mask,3)
   pp = regionprops(logical(Mask(:,:,iZ)), 'area', 'PixelIdxList');
-  stats = pp([pp.Area] > sizeCutoff);
+  stats = pp([pp.Area] > sizeCutoff/4);
   M3 = Mask2(:,:,iZ);
   M3(vertcat(stats.PixelIdxList)) = 1;
   Mask2(:,:,iZ) = M3;
@@ -57,11 +56,11 @@ Mask = Mask2;
 Mask = smoothn(Mask,SmoothSize);
 Mask(Mask > blurCutoff) = true;
 Mask(Mask~=1) = 0;
-% Mask = imclose(Mask, strel("disk",2));
-% Mask = imfill(Mask, 'holes');
+Mask = imclose(Mask, strel("disk",2));
+Mask = imfill(Mask, 'holes');
 % bigshow(Mask)
 Mask = imbinarize(Mask);
-% figure;shat(Mask)
+
 label = zeros(size(Mask));
 twoedmask = zeros(size(Mask));
 for s = 1:size(Mask, 3)
@@ -82,23 +81,17 @@ for s = 1:size(Mask, 3)
     peep(peep<0) =NaN;
     peep = fillmissing(peep, "nearest");
     peep(peep == 0) = 0;
-%     figure;shat(label(:,:,s))
 %     pop = zeros(size(peep));
     adj = isAdjacent(peep);
-    for one = 1:size(adj, 1)
-        wavelength(peep == one);
-%         max(adj, [], 'all')
-        one;
+    for one = 1:max(adj, [], 'all')
 %         one
 % max(peep, [], 'all')
         labloc = find(adj(one, :));
         for dwa = 1:length(labloc)
             two = labloc(dwa);
-            abs(mean(wavelength(peep == one), 'all', 'omitnan') - mean(wavelength(peep == two), 'all', 'omitnan'))
             if (abs(mean(wavelength(peep == one), 'all', 'omitnan') - mean(wavelength(peep == two), 'all', 'omitnan')) < wavelengthCutoff)
                 peep(peep == two) = one;
             end
-            
 %             for iVar=1:1:numel(Vars)
 %                 V = squeeze(norm(:,:,:,iVar));
 %                 if (abs(mean(V(peep, s) == one), 'all', 'omitnan') - mean(V(peep,s) == two), 'all', 'omitnan') < meanCutoff)

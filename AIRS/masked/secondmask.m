@@ -1,7 +1,7 @@
 figure
 
 % plotter = atan2(cmon.l(:,:,10),cmon.k(:,:,10)).*mask(:,:,10);
-plotter = cmon.l(:,:,10).*mask(:,:,10);
+plotter = cmon.l(:,:,10).*mask;
 % plot2 = ST12.IN(:,:,10).*ST12.WaveMask(:,:,10);
 
 % plotter(plotter == 0) = NaN;
@@ -22,14 +22,15 @@ end
 
 
 plask = zeros(size(Sigma));
-plask(Sigma >= 0.5) = 1;
+Sigma = Sigma.^0.5;
+plask(Sigma >= 0.2) = 1;
 plask = imbinarize(plask);
 plask = bwmorph(plask, 'bridge', 1);
 plask = bwmorph(plask, 'clean');
 plask = imdilate(plask, strel([2 2]));
 plask = bwmorph(plask, 'thin', 2);
 plask = bwperim(plask, 4);
-plask(1, 218:230) = 1;
+% plask(1, 218:230) = 1;
 
 [B, label] = bwboundaries(plask, 8);
 
